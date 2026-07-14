@@ -1,0 +1,62 @@
+[
+  {
+    "name": "World",
+    "flag": "🌐"
+  },
+  {
+    "name": "United States",
+    "flag": "🇺🇸"
+  },
+  {
+    "name": "United Kingdom",
+    "flag": "🇬🇧"
+  },
+  {
+    "name": "Germany",
+    "flag": "🇩🇪"
+  },
+  {
+    "name": "Turkey",
+    "flag": "🇹🇷"
+  },
+  {
+    "name": "Japan",
+    "flag": "🇯🇵"
+  },
+  {
+    "name": "France",
+    "flag": "🇫🇷"
+  },
+  {
+    "name": "China",
+    "flag": "🇨🇳"
+  },
+  {
+    "name": "Russia",
+    "flag": "🇷🇺"
+  },
+  {
+    "name": "India",
+    "flag": "🇮🇳"
+  },
+  {
+    "name": "Brazil",
+    "flag": "🇧🇷"
+  },
+  {
+    "name": "Israel",
+    "flag": "🇮🇱"
+  },
+  {
+    "name": "Ukraine",
+    "flag": "🇺🇦"
+  },
+  {
+    "name": "South Korea",
+    "flag": "🇰🇷"
+  },
+  {
+    "name": "Australia",
+    "flag": "🇦🇺"
+  }
+]

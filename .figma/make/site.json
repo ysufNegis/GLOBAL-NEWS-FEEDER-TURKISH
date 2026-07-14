@@ -1,0 +1,10 @@
+{
+  "description": "Discover global news through a visually appealing RSS feed, categorized by country and topic, with tags for relevant nations and subjects.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

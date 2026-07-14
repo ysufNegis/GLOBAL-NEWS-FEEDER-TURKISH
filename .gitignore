@@ -1,0 +1,33 @@
+# Node.js
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# Project database / cache files (dynamic JSONs)
+backend/data/articles.json
+
+# IDE / OS Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Agent configuration (optional, can be ignored if desired)
+.agents/
+AGENTS.md
+CLAUDE.md
