@@ -125,7 +125,27 @@ graph TD
    ```bash
    npm run dev
    ```
-   *   Arayüze varsayılan olarak **`http://localhost:8443`** (veya Vite'in atadığı port) üzerinden erişebilirsiniz.
+    *   Arayüze varsayılan olarak **`http://localhost:8443`** (veya Vite'in atadığı port) üzerinden erişebilirsiniz.
+
+---
+
+### ⚡ Günlük Çalıştırma Kılavuzu / Quick Daily Startup
+
+Projeyi bir kere kurduktan sonra, bilgisayarınızı her açtığınızda uygulamayı çalıştırmak için sırasıyla şu iki komutu çalıştırmanız yeterlidir:
+
+1. **Ollama'nın arka planda açık olduğundan emin olun.**
+2. **Birinci terminal sekmesinde Backend'i başlatın:**
+   ```bash
+   cd backend
+   python app.py
+   ```
+3. **İkinci terminal sekmesinde (projenin ana dizininde) Frontend'i başlatın:**
+   ```bash
+   npm run dev
+   ```
+
+*   **Arayüz (GUI):** `http://localhost:8443`
+*   **Backend Servis:** `http://localhost:5001`
 
 ---
 

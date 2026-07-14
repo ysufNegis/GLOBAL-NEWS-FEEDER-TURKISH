@@ -44,7 +44,8 @@ Başlık
                 "content": prompt
             }
         ],
-        format="json"
+        format="json",
+        keep_alive="2m"
     )
 
     return json.loads(response["message"]["content"])
