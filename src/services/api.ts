@@ -12,7 +12,7 @@ export interface Feed {
   country: string;
 }
 
-const API_BASE = "http://localhost:5001/api";
+const API_BASE = `http://${window.location.hostname}:5001/api`;
 
 export async function checkBackendStatus(): Promise<boolean> {
   try {
