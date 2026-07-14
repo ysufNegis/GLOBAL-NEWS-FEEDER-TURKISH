@@ -18,6 +18,7 @@ export default function ManageFeedsModal({ isOpen, onClose, countries, onFeedsUp
   const [editName, setEditName] = useState("");
   const [editUrl, setEditUrl] = useState("");
   const [editCountry, setEditCountry] = useState("World");
+  const [editTwoStepTranslation, setEditTwoStepTranslation] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
   const loadFeeds = async () => {
@@ -47,6 +48,7 @@ export default function ManageFeedsModal({ isOpen, onClose, countries, onFeedsUp
     setEditName(feed.name);
     setEditUrl(feed.url);
     setEditCountry(feed.country);
+    setEditTwoStepTranslation(feed.two_step_translation || false);
     setError("");
   };
 
@@ -58,7 +60,7 @@ export default function ManageFeedsModal({ isOpen, onClose, countries, onFeedsUp
     setActionLoading(true);
     setError("");
     try {
-      const res = await updateFeed(id, editName.trim(), editUrl.trim(), editCountry);
+      const res = await updateFeed(id, editName.trim(), editUrl.trim(), editCountry, editTwoStepTranslation);
       setFeeds(res.feeds);
       setEditingId(null);
       onFeedsUpdated();
@@ -166,6 +168,24 @@ export default function ManageFeedsModal({ isOpen, onClose, countries, onFeedsUp
                         </select>
                       </div>
 
+                      <div className="flex items-start gap-2 pt-1 pb-1">
+                        <input
+                          type="checkbox"
+                          id={`edit-two-step-${feed.id}`}
+                          checked={editTwoStepTranslation}
+                          onChange={(e) => setEditTwoStepTranslation(e.target.checked)}
+                          className="mt-0.5 w-3.5 h-3.5 bg-secondary border border-border text-accent focus:ring-accent rounded-sm cursor-pointer accent-accent"
+                        />
+                        <div className="flex flex-col">
+                          <label htmlFor={`edit-two-step-${feed.id}`} className="font-mono-data text-[9px] uppercase text-foreground cursor-pointer select-none">
+                            Çift Aşamalı Çeviri Modu
+                          </label>
+                          <p className="text-[9.5px] text-muted-foreground leading-normal">
+                            Eğer bu kaynak İngilizce dışındaki bir dilde ise, önce İngilizceye, ardından Türkçeye çevirir.
+                          </p>
+                        </div>
+                      </div>
+
                       <div className="flex justify-end gap-2 pt-2 border-t border-border/30">
                         <button
                           type="button"
@@ -192,6 +212,11 @@ export default function ManageFeedsModal({ isOpen, onClose, countries, onFeedsUp
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-display font-semibold text-foreground text-sm">{feed.name}</span>
                           <span className="font-mono-data text-[9px] px-1.5 py-0.5 border border-border text-secondary-foreground bg-secondary/35 rounded-sm uppercase tracking-wide">{feed.country}</span>
+                          {feed.two_step_translation && (
+                            <span className="font-mono-data text-[9px] px-1.5 py-0.5 border border-accent/30 text-accent bg-accent/10 rounded-sm uppercase tracking-wide">
+                              Çift Aşamalı Çeviri
+                            </span>
+                          )}
                         </div>
                         <p className="text-muted-foreground font-mono-data text-[9px] mt-1 break-all tracking-wide select-all">{feed.url}</p>
                       </div>

@@ -10,6 +10,7 @@ export interface Feed {
   name: string;
   url: string;
   country: string;
+  two_step_translation?: boolean;
 }
 
 const API_BASE = `http://${window.location.hostname}:5001/api`;
@@ -149,13 +150,13 @@ export async function getFeeds(): Promise<{ data: Feed[]; source: "python" | "lo
   return { data: getLocalFeeds(), source: "local" };
 }
 
-export async function addFeed(name: string, url: string, country: string): Promise<{ feeds: Feed[]; news: NewsItem[]; source: "python" | "local" }> {
+export async function addFeed(name: string, url: string, country: string, twoStepTranslation?: boolean): Promise<{ feeds: Feed[]; news: NewsItem[]; source: "python" | "local" }> {
   const connected = await checkBackendStatus();
   if (connected) {
     try {
       const feeds = await fetchFromBackend<Feed[]>("/feeds", {
         method: "POST",
-        body: JSON.stringify({ name, url, country }),
+        body: JSON.stringify({ name, url, country, two_step_translation: twoStepTranslation }),
       });
       const news = await fetchFromBackend<NewsItem[]>("/news");
       return { feeds, news, source: "python" };
@@ -170,7 +171,7 @@ export async function addFeed(name: string, url: string, country: string): Promi
   }
   
   const feedId = "feed_" + Math.random().toString(36).substr(2, 9);
-  const newFeed: Feed = { id: feedId, name, url, country };
+  const newFeed: Feed = { id: feedId, name, url, country, two_step_translation: twoStepTranslation };
   feeds.push(newFeed);
   saveLocalFeeds(feeds);
   
@@ -247,14 +248,15 @@ export async function updateFeed(
   id: string,
   name: string,
   url: string,
-  country: string
+  country: string,
+  twoStepTranslation?: boolean
 ): Promise<{ feeds: Feed[]; source: "python" | "local" }> {
   const connected = await checkBackendStatus();
   if (connected) {
     try {
       const feeds = await fetchFromBackend<Feed[]>(`/feeds/${id}`, {
         method: "PUT",
-        body: JSON.stringify({ name, url, country }),
+        body: JSON.stringify({ name, url, country, two_step_translation: twoStepTranslation }),
       });
       return { feeds, source: "python" };
     } catch (e: any) {
@@ -272,7 +274,7 @@ export async function updateFeed(
     throw new Error("Another feed is already registered with this URL");
   }
 
-  feeds[index] = { id, name, url, country };
+  feeds[index] = { id, name, url, country, two_step_translation: twoStepTranslation };
   saveLocalFeeds(feeds);
   return { feeds, source: "local" };
 }

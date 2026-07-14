@@ -221,15 +221,26 @@ def classify_missing_articles_async():
                     if not has_tr:
                         if HAS_TRANSLATOR:
                             print(f"Background NLLB Translating: {a['title'][:45]}...")
-                            tr_title = translate_to_turkish(a['title'])
-                            tr_excerpt = translate_to_turkish(a['excerpt'])
-                            # Only count as translated if NLLB successfully returned something different
-                            if tr_title != a['title']:
+                            if a.get('two_step_translation', False):
+                                from llm.translator import translate_to_english, translate_to_turkish
+                                english_title = translate_to_english(a['title'])
+                                english_excerpt = translate_to_english(a['excerpt'])
+                                tr_title = translate_to_turkish(english_title)
+                                tr_excerpt = translate_to_turkish(english_excerpt)
+                                
+                                a['title'] = english_title
+                                a['excerpt'] = english_excerpt
                                 a['title_tr'] = tr_title
                                 a['excerpt_tr'] = tr_excerpt
-                                updated = True
-                                save_json_file(ARTICLES_FILE, articles)
-                                time.sleep(0.3) # Avoid overloading CPU
+                            else:
+                                tr_title = translate_to_turkish(a['title'])
+                                tr_excerpt = translate_to_turkish(a['excerpt'])
+                                a['title_tr'] = tr_title
+                                a['excerpt_tr'] = tr_excerpt
+                                
+                            updated = True
+                            save_json_file(ARTICLES_FILE, articles)
+                            time.sleep(0.3) # Avoid overloading CPU
                                 
             except Exception as e:
                 print(f"Error in background worker sweep: {e}")
@@ -306,6 +317,7 @@ def fetch_feed_articles(feed):
     url = feed['url']
     source = feed['name']
     primary_country = feed['country']
+    two_step_translation = feed.get('two_step_translation', False)
     
     parsed_items = []
     
@@ -361,7 +373,8 @@ def fetch_feed_articles(feed):
                 "countries": countries,
                 "excerpt": excerpt,
                 "excerpt_tr": excerpt_tr,
-                "primaryCountry": primary_country
+                "primaryCountry": primary_country,
+                "two_step_translation": two_step_translation
             })
         return articles
     except Exception as e:
@@ -457,6 +470,7 @@ def api_add_feed():
     name = data['name'].strip()
     url = data['url'].strip()
     country = data['country'].strip()
+    two_step_translation = data.get('two_step_translation', False)
     
     if not name or not url or not country:
         return jsonify({"error": "Fields cannot be empty"}), 400
@@ -471,7 +485,8 @@ def api_add_feed():
         "id": feed_id,
         "name": name,
         "url": url,
-        "country": country
+        "country": country,
+        "two_step_translation": two_step_translation
     }
     feeds.append(new_feed)
     save_json_file(FEEDS_FILE, feeds)
@@ -499,6 +514,7 @@ def api_update_feed(feed_id):
     name = data['name'].strip()
     url = data['url'].strip()
     country = data['country'].strip()
+    two_step_translation = data.get('two_step_translation', False)
     
     if not name or not url or not country:
         return jsonify({"error": "Fields cannot be empty"}), 400
@@ -516,7 +532,8 @@ def api_update_feed(feed_id):
         "id": feed_id,
         "name": name,
         "url": url,
-        "country": country
+        "country": country,
+        "two_step_translation": two_step_translation
     }
     save_json_file(FEEDS_FILE, feeds)
     return jsonify(feeds)

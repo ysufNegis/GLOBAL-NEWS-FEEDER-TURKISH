@@ -99,7 +99,50 @@ def init_translator():
     print("    pip install transformers torch sentencepiece")
     return False
 
-def translate_to_turkish(text):
+LANGDETECT_TO_NLLB = {
+    'en': 'eng_Latn',
+    'de': 'deu_Latn',
+    'fr': 'fra_Latn',
+    'es': 'spa_Latn',
+    'ru': 'rus_Cyrl',
+    'zh-cn': 'zho_Hans',
+    'zh-tw': 'zho_Hant',
+    'zh': 'zho_Hans',
+    'ja': 'jpn_Jpan',
+    'ar': 'ara_Arab',
+    'it': 'ita_Latn',
+    'pt': 'por_Latn',
+    'nl': 'nld_Latn',
+    'pl': 'pol_Latn',
+    'tr': 'tur_Latn',
+    'uk': 'ukr_Cyrl',
+    'ko': 'kor_Hang',
+    'fa': 'pes_Arab',
+    'sv': 'swe_Latn',
+    'no': 'nob_Latn',
+    'da': 'dan_Latn',
+    'fi': 'fin_Latn',
+    'el': 'ell_Grek',
+    'hi': 'hin_Deva',
+    'he': 'heb_Hebr',
+    'id': 'ind_Latn',
+    'vi': 'vie_Latn',
+    'th': 'tha_Thai',
+    'bg': 'bul_Cyrl',
+    'cs': 'ces_Latn',
+    'ro': 'ron_Latn',
+    'hu': 'hun_Latn',
+    'sk': 'slk_Latn',
+    'sl': 'slv_Latn',
+    'et': 'est_Latn',
+    'lv': 'lvs_Latn',
+    'lt': 'lit_Latn',
+    'hr': 'hrv_Latn',
+    'sr': 'srp_Cyrl',
+    'mk': 'mkd_Cyrl',
+}
+
+def translate(text, src_lang="eng_Latn", tgt_lang="tur_Latn"):
     global translator_engine, sp_processor, engine_type
     
     if not text or not text.strip():
@@ -111,17 +154,13 @@ def translate_to_turkish(text):
             
     try:
         if engine_type == "ctranslate2" and translator_engine is not None and sp_processor is not None:
-            # Tokenize for NLLB (prepend source lang token 'eng_Latn' and append end-of-sentence '</s>')
-            source_tokens = ["eng_Latn"] + sp_processor.encode_as_pieces(text.strip()) + ["</s>"]
+            source_tokens = [src_lang] + sp_processor.encode_as_pieces(text.strip()) + ["</s>"]
             
             try:
-                # Run translation batch (forcing target language 'tur_Latn')
-                results = translator_engine.translate_batch([source_tokens], target_prefix=[["tur_Latn"]])
+                results = translator_engine.translate_batch([source_tokens], target_prefix=[[tgt_lang]])
             except Exception as execution_error:
-                # Check if we were running on CUDA and failed due to missing cublas or CUDA libraries
                 if hasattr(translator_engine, "device") and translator_engine.device == "cuda":
                     print(f"CTranslate2 CUDA execution failed ({execution_error}). Re-initializing engine on CPU...")
-                    # Recover and load on CPU
                     from huggingface_hub import snapshot_download
                     model_dir = snapshot_download("mijuanlo/nllb-200-distilled-600M-ct2-int8")
                     translator_engine = ctranslate2.Translator(
@@ -129,25 +168,50 @@ def translate_to_turkish(text):
                         device="cpu", 
                         compute_type="int8"
                     )
-                    # Retry translate_batch on CPU
-                    results = translator_engine.translate_batch([source_tokens], target_prefix=[["tur_Latn"]])
+                    results = translator_engine.translate_batch([source_tokens], target_prefix=[[tgt_lang]])
                 else:
                     raise execution_error
             
             output_tokens = results[0].hypotheses[0]
-            
-            # Remove target language token from decoded results
-            if output_tokens and output_tokens[0] == "tur_Latn":
+            if output_tokens and output_tokens[0] == tgt_lang:
                 output_tokens = output_tokens[1:]
                 
             return sp_processor.decode(output_tokens)
             
         elif engine_type == "transformers" and translator_engine is not None:
-            res = translator_engine(text.strip())
+            res = translator_engine(text.strip(), src_lang=src_lang, tgt_lang=tgt_lang)
             if res and len(res) > 0:
                 return res[0]['translation_text']
                 
     except Exception as e:
-        print(f"Translation engine execution error: {e}")
+        print(f"Translation engine execution error from {src_lang} to {tgt_lang}: {e}")
         
     return text
+
+def translate_to_turkish(text):
+    return translate(text, src_lang="eng_Latn", tgt_lang="tur_Latn")
+
+def translate_to_english(text):
+    from langdetect import detect
+    try:
+        lang = detect(text)
+    except Exception:
+        lang = 'en'
+        
+    if lang == 'en':
+        return text
+        
+    nllb_lang = LANGDETECT_TO_NLLB.get(lang, 'eng_Latn')
+    if nllb_lang == 'eng_Latn':
+        return text
+        
+    print(f"Detecting language '{lang}' -> mapping to NLLB '{nllb_lang}'. Translating to English first.")
+    return translate(text, src_lang=nllb_lang, tgt_lang="eng_Latn")
+
+def translate_two_step(text):
+    """
+    Translates to English first, then English to Turkish.
+    If original is English or language detection fails, translates directly English to Turkish.
+    """
+    english_text = translate_to_english(text)
+    return translate_to_turkish(english_text)

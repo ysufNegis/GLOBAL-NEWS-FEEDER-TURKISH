@@ -13,6 +13,7 @@ export default function AddFeedModal({ isOpen, onClose, countries, onSuccess }: 
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [country, setCountry] = useState("World");
+  const [twoStepTranslation, setTwoStepTranslation] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -40,12 +41,14 @@ export default function AddFeedModal({ isOpen, onClose, countries, onSuccess }: 
       const res = await addFeed(
         name.trim(),
         url.trim(),
-        country
+        country,
+        twoStepTranslation
       );
       onSuccess(res.feeds, res.news);
       setName("");
       setUrl("");
       setCountry("World");
+      setTwoStepTranslation(false);
       onClose();
     } catch (err: any) {
       setError(err.message || "Failed to register RSS feed");
@@ -124,6 +127,24 @@ export default function AddFeedModal({ isOpen, onClose, countries, onSuccess }: 
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="flex items-start gap-2.5 pt-1">
+            <input
+              type="checkbox"
+              id="twoStepTranslation"
+              checked={twoStepTranslation}
+              onChange={(e) => setTwoStepTranslation(e.target.checked)}
+              className="mt-0.5 w-4 h-4 bg-secondary border border-border text-accent focus:ring-accent rounded-sm cursor-pointer accent-accent"
+            />
+            <div className="flex flex-col">
+              <label htmlFor="twoStepTranslation" className="font-mono-data text-[10px] uppercase text-foreground cursor-pointer select-none">
+                Çift Aşamalı Çeviri Modu
+              </label>
+              <p className="text-[10px] text-muted-foreground mt-0.5 leading-normal">
+                Eğer bu kaynak İngilizce dışındaki bir dilde ise, önce İngilizceye, ardından Türkçeye çevirerek çeviri kalitesini artırır.
+              </p>
+            </div>
           </div>
 
           <div className="pt-4 flex gap-3 justify-end">
