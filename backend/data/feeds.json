@@ -1,32 +1,9 @@
 [
   {
-    "id": "f1",
-    "name": "BBC News UK",
-    "url": "https://feeds.bbci.co.uk/news/uk/rss.xml",
-    "country": "United Kingdom"
-  },
-  {
-    "id": "f2",
-    "name": "NYT World News",
-    "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
-    "country": "United States"
-  },
-  {
-    "id": "f3",
-    "name": "TRT World News",
-    "url": "https://www.trtworld.com/feed",
-    "country": "Turkey"
-  },
-  {
-    "id": "f4",
-    "name": "Deutsche Welle World",
-    "url": "https://rss.dw.com/rdf/rss-en-world",
-    "country": "Germany"
-  },
-  {
-    "id": "f5",
-    "name": "NHK World News",
-    "url": "https://www3.nhk.or.jp/nhkworld/rss/xml/news.xml",
-    "country": "Japan"
+    "id": "feed_19321",
+    "name": "Ynet",
+    "url": "https://www.ynet.co.il/Integration/StoryRss3082.xml",
+    "country": "Israel",
+    "two_step_translation": false
   }
 ]

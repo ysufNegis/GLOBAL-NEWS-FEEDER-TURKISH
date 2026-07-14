@@ -45,7 +45,8 @@ Başlık
             }
         ],
         format="json",
-        keep_alive="2m"
+        keep_alive="2m",
+        think=False
     )
 
     return json.loads(response["message"]["content"])

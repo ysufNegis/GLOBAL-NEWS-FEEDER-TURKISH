@@ -222,16 +222,23 @@ def classify_missing_articles_async():
                         if HAS_TRANSLATOR:
                             print(f"Background NLLB Translating: {a['title'][:45]}...")
                             if a.get('two_step_translation', False):
-                                from llm.translator import translate_to_english, translate_to_turkish
-                                english_title = translate_to_english(a['title'])
-                                english_excerpt = translate_to_english(a['excerpt'])
-                                tr_title = translate_to_turkish(english_title)
-                                tr_excerpt = translate_to_turkish(english_excerpt)
-                                
-                                a['title'] = english_title
-                                a['excerpt'] = english_excerpt
-                                a['title_tr'] = tr_title
-                                a['excerpt_tr'] = tr_excerpt
+                                try:
+                                    from llm.translator import translate_to_english
+                                    english_title = translate_to_english(a['title'])
+                                    english_excerpt = translate_to_english(a['excerpt'])
+                                    tr_title = translate_to_turkish(english_title)
+                                    tr_excerpt = translate_to_turkish(english_excerpt)
+                                    
+                                    a['title'] = english_title
+                                    a['excerpt'] = english_excerpt
+                                    a['title_tr'] = tr_title
+                                    a['excerpt_tr'] = tr_excerpt
+                                except ImportError:
+                                    # Fallback if translate_to_english is not available
+                                    tr_title = translate_to_turkish(a['title'])
+                                    tr_excerpt = translate_to_turkish(a['excerpt'])
+                                    a['title_tr'] = tr_title
+                                    a['excerpt_tr'] = tr_excerpt
                             else:
                                 tr_title = translate_to_turkish(a['title'])
                                 tr_excerpt = translate_to_turkish(a['excerpt'])

@@ -1,29 +1,11 @@
 LABELS = [
     "Diplomasi",
     "Savaş",
-    "Çatışma",
     "Ateşkes",
-    "Savunma",
-    "Füze",
-    "Nükleer",
     "Terör",
     "İstihbarat",
     "Enerji",
-    "Petrol",
-    "Doğalgaz",
     "Ekonomi",
-    "Enflasyon",
-    "Ticaret",
-    "Yapay Zeka",
-    "Siber Güvenlik",
-    "Uzay",
-    "NATO",
-    "AB",
-    "BM",
-    "BRICS",
-    "G7",
-    "G20",
-    "Göç",
-    "İnsan Hakları",
-    "Seçim"
+    "Ticaret"
+  
 ]
